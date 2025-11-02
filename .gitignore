@@ -1,0 +1,51 @@
+# C++ build artifacts
+*.o
+*.obj
+*.so
+*.dll
+*.exe
+*.out
+*.a
+*.lib
+*.cmake
+
+# Build directories
+/build/
+bin/
+[Bb]uild/
+[Cc]MakeFiles/
+CMakeCache.txt
+
+# IDE and editor files
+*.swp
+*.swo
+*.log
+*.vscode/
+*.idea/
+*.user
+*.suo
+
+# Python
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+*.coverage
+.tox/
+env/
+venv/
+ENV/
+*.egg-info/
+
+# OS-specific junk
+
+# Others
+*.test
+*.spec
+*.coverage
+*.DS_Store
+
+# Gurobi and other proprietary files I can't share
+deps/**
+CoppeliaSim_Edu_V4_1_0_Ubuntu20_04.tar.xz
+deps/gurobi12i.0.3_linux64.tar.gz

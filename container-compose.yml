@@ -1,0 +1,17 @@
+services:
+  coppeliasim:
+    build: .
+    image: coppeliasim_v4_1_0
+    environment:
+      - DISPLAY
+      - QT_DEBUG_PLUGINS=1
+      # You may add more variables if needed for ROS/Python
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+    working_dir: /home/user/CoppeliaSim_Edu_V4_1_0_Ubuntu20_04
+    devices:
+      - /dev/dri # (Optional: OpenGL acceleration for Intel/AMD GPUs)
+    ipc: host # (Sometimes helps with Qt/OpenGL apps)
+    network_mode: host # (Needed if scripts use host-port APIs)
+    # You can add "user: $UID:$GID" if you have mapping issues
+

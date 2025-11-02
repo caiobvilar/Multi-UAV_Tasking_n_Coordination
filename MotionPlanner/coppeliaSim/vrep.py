@@ -2,7 +2,7 @@
 import json 
 import sys 
 import os 
-lib_path = "/home/redwan/PycharmProjects/MILP"
+lib_path = "/workspaces/Multi-UAV_Tasking_n_Coordination/MotionPlanner/coppeliaSim"
 sys.path.append(lib_path)
 from QuadMILP import Path, TrajManager
 
