@@ -9,6 +9,8 @@ RUN apt-get update && \
         git \
         python3 \
         python3-pip \
+        python3-dev \
+        libpython3.8-dev \
         libglib2.0-0 \
         libglu1-mesa \
         libxrender1 \
@@ -37,8 +39,68 @@ RUN apt-get update && \
         libavformat-dev \
         libswscale-dev \
         ca-certificates \
-        sudo && \
+        sudo \
+        lsb-release \
+        curl \
+        gnupg2 \
+        wget && \
     rm -rf /var/lib/apt/lists/*
+
+# Setup ROS Noetic repository
+RUN sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list' && \
+    curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | apt-key add -
+
+# Install ROS Noetic and required packages
+RUN apt-get update && \
+    apt-get install -y \
+        ros-noetic-ros-base \
+        ros-noetic-catkin \
+        ros-noetic-roscpp \
+        ros-noetic-rospy \
+        ros-noetic-sensor-msgs \
+        ros-noetic-std-msgs \
+        ros-noetic-trajectory-msgs \
+        ros-noetic-geometry-msgs \
+        ros-noetic-tf2-ros \
+        ros-noetic-tf2 \
+        python3-rosdep \
+        python3-rosinstall \
+        python3-rosinstall-generator \
+        python3-wstool \
+        build-essential \
+        cmake \
+        gcc \
+        g++ && \
+    rm -rf /var/lib/apt/lists/*
+
+# Install C++ libraries and Qt5 with all necessary modules
+RUN apt-get update && \
+    apt-get install -y \
+        libarmadillo-dev \
+        libboost-all-dev \
+        libopencv-dev \
+        qt5-default \
+        libqt5charts5-dev \
+        qtbase5-dev \
+        qtchooser \
+        qt5-qmake \
+        qtbase5-dev-tools \
+        libqt5printsupport5 \
+        libqcustomplot-dev \
+        qtdeclarative5-dev \
+        qtquickcontrols2-5-dev \
+        qml-module-qtquick2 \
+        qml-module-qtquick-controls \
+        qml-module-qtquick-controls2 \
+        qml-module-qtquick-dialogs \
+        qml-module-qtquick-layouts \
+        qml-module-qtquick-window2 \
+        libqt5quickcontrols2-5 && \
+    rm -rf /var/lib/apt/lists/*
+
+# Initialize rosdep
+RUN rosdep init && \
+    rosdep update
 
 # Create user with password and sudo access
 RUN useradd -m -s /bin/bash user && \
@@ -82,12 +144,17 @@ RUN python3 -m pip install --upgrade pip && \
 WORKDIR /home/user
 USER user
 
-# Add Gurobi env vars to user's bashrc for interactive sessions
-RUN echo 'export GUROBI_HOME=/home/user/gurobi1203/linux64' >> ~/.bashrc && \
+# Add ROS and Gurobi env vars to user's bashrc for interactive sessions
+RUN echo 'source /opt/ros/noetic/setup.bash' >> ~/.bashrc && \
+    echo 'export GUROBI_HOME=/home/user/gurobi1203/linux64' >> ~/.bashrc && \
     echo 'export PATH="${PATH}:${GUROBI_HOME}/bin"' >> ~/.bashrc && \
     echo 'export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${GUROBI_HOME}/lib"' >> ~/.bashrc && \
     echo 'export GRB_LICENSE_FILE=/home/user/gurobi.lic' >> ~/.bashrc
 
+# Source ROS setup for this session
+ENV ROS_DISTRO=noetic
+RUN /bin/bash -c "source /opt/ros/noetic/setup.bash"
+
 WORKDIR /home/user/CoppeliaSim_Edu_V4_1_0_Ubuntu20_04
 
-CMD ["./coppeliaSim.sh"]
+CMD ["/bin/bash", "-c", "source /opt/ros/noetic/setup.bash && ./coppeliaSim.sh"]
