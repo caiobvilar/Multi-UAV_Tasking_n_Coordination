@@ -95,7 +95,6 @@ void MainWindow::on_actionImage_dir_triggered()
     qDebug() << images;
     ui->comboBox->setVisible(true);
 
-    backgrounds.clear();
     QStringList maps;
     for (auto filename : images)
     {
@@ -107,6 +106,7 @@ void MainWindow::on_actionImage_dir_triggered()
         maps << file.fileName();
     }
     ui->comboBox->addItems(maps);
+    backgrounds.clear();
 }
 
 void MainWindow::on_clearButton_clicked()

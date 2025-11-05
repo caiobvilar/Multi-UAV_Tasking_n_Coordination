@@ -11,6 +11,9 @@ RUN apt-get update && \
         llvm \
         gdb \
         build-essential \
+        g++ \
+        valgrind \
+        kcachegrind \
         clang-format \
         clang-tidy \
         git \

@@ -20,7 +20,9 @@ public:
     ~logger()
     {
         if (logger_thread_.joinable())
+        {
             logger_thread_.join();
+        }
     }
     void write_json(const QJsonObject &data) const
     {

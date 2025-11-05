@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 #include <iostream>
 #include <vector>
+#include <cmath>
 using namespace std;
 
 MainWindow::MainWindow(std::shared_ptr<problem> instance, QWidget *parent)
@@ -30,10 +31,45 @@ MainWindow::~MainWindow()
 
 void MainWindow::clickedGraph(QMouseEvent *event)
 {
+    // defensive checks: ensure event and map/axes are valid and the point is within widget bounds
+    if (!event)
+    {
+        qWarning() << "clickedGraph: null event";
+        return;
+    }
+
+    if (!ui || !ui->map)
+    {
+        qWarning() << "clickedGraph: UI or map widget is not available";
+        return;
+    }
+
     QPoint point = event->pos();
-    double x, y;
-    x = ui->map->xAxis->pixelToCoord(point.x());
-    y = ui->map->yAxis->pixelToCoord(point.y());
+
+    // make sure the point lies within the map widget's rectangle
+    if (!ui->map->rect().contains(point))
+    {
+        qWarning() << "clickedGraph: point outside map widget:" << point;
+        return;
+    }
+
+    // ensure axes pointers exist before calling pixelToCoord
+    if (!ui->map->xAxis || !ui->map->yAxis)
+    {
+        qWarning() << "clickedGraph: map axes not available";
+        return;
+    }
+
+    double x = ui->map->xAxis->pixelToCoord(point.x());
+    double y = ui->map->yAxis->pixelToCoord(point.y());
+
+    // validate numeric results
+    if (!std::isfinite(x) || !std::isfinite(y))
+    {
+        qWarning() << "clickedGraph: non-finite coordinates" << x << y;
+        return;
+    }
+
     draw->addPoints(x, y);
     prob_instance->add_vertex(x, y);
 }
@@ -95,7 +131,6 @@ void MainWindow::on_actionImage_dir_triggered()
     qDebug() << images;
     ui->comboBox->setVisible(true);
 
-    backgrounds.clear();
     QStringList maps;
     for (auto filename : images)
     {
@@ -107,6 +142,7 @@ void MainWindow::on_actionImage_dir_triggered()
         maps << file.fileName();
     }
     ui->comboBox->addItems(maps);
+    backgrounds.clear();
 }
 
 void MainWindow::on_clearButton_clicked()
