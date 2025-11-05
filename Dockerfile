@@ -6,6 +6,13 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && \
     apt-get install -y \
         xz-utils \
+        clang \
+        clang-tools \
+        llvm \
+        build-essential \
+        libstdc++-12-dev \
+        clang-format \
+        clang-tidy \
         git \
         python3 \
         python3-pip \

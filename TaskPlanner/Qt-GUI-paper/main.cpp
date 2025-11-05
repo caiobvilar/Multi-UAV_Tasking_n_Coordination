@@ -5,18 +5,19 @@
 #include "logger.h"
 
 using namespace std;
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
 
     auto prob = make_shared<solver>();
     auto log = make_shared<logger>(prob);
     QApplication a(argc, argv);
-    MainWindow w(prob->getPtr());
+    MainWindow w(prob);
 
     log->Start();
     prob->Start();
 
     w.show();
-    int ret =  a.exec();
+    int ret = a.exec();
 
     prob->STOP = true;
     // terminate worker thread
