@@ -35,7 +35,8 @@
       "string": "cpp",
       "unordered_map": "cpp",
       "vector": "cpp",
-      "system_error": "cpp"
+      "system_error": "cpp",
+      "armadillo": "cpp"
     },
     "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
     "cmake.configureOnOpen": true,

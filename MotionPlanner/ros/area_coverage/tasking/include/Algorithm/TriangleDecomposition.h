@@ -33,7 +33,7 @@ inline static void printMap(T &task)
         copy(it->second.begin(), it->second.end(), ostream_iterator<double>(cout, " "));
         cout << endl;
     }
-};
+}
 
 template <typename T>
 class TriangleDecomposition
@@ -101,7 +101,7 @@ void TriangleDecomposition<T>::allocate_task(std::weak_ptr<Node> node_, TASK &ta
         {
             task[node->id].push_back(value);
             decompose[node->triangle_id].push_back(value);
-            printf("%ld -> (%d)\n", value, node->id);
+            printf("%f-> (%d)\n", value, node->id);
         }
     }
     for (auto &child : node->children)
