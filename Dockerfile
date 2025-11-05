@@ -10,7 +10,6 @@ RUN apt-get update && \
         clang-tools \
         llvm \
         build-essential \
-        libstdc++-12-dev \
         clang-format \
         clang-tidy \
         git \

@@ -23,10 +23,11 @@
       "*.srv": "plaintext",
       "*.action": "plaintext",
       "CMakeLists.txt": "cmake",
-      "*.cmake": "cmake"
+      "*.cmake": "cmake",
+      "variant": "cpp"
     },
     "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
-    "cmake.configureOnOpen": false,
+    "cmake.configureOnOpen": true,
     "[python]": {
       "editor.tabSize": 4,
       "editor.insertSpaces": true
@@ -35,7 +36,10 @@
       "editor.tabSize": 4,
       "editor.insertSpaces": true
     },
-    "editor.formatOnSave": true
+    "editor.formatOnSave": true,
+    "clang-format.language.cpp.enable": true,
+    "clang-format.style": "file",
+    "clang-format.assumeFilename": "clang-format"
   },
   "extensions": {
     "recommendations": [
