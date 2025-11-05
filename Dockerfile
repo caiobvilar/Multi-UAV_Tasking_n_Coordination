@@ -165,6 +165,6 @@ RUN echo 'source /opt/ros/noetic/setup.bash' >> ~/.bashrc && \
 ENV ROS_DISTRO=noetic
 RUN /bin/bash -c "source /opt/ros/noetic/setup.bash"
 
-WORKDIR /home/user/CoppeliaSim_Edu_V4_1_0_Ubuntu20_04
+WORKDIR /workspaces/
 
-CMD ["/bin/bash", "-c", "source /opt/ros/noetic/setup.bash && ./coppeliaSim.sh"]
+CMD ["/bin/bash", "-c", "source /opt/ros/noetic/setup.bash"]
