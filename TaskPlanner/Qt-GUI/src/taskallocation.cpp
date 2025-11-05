@@ -11,7 +11,7 @@ TaskAllocation::TaskAllocation(const ProblemDefinition &pdf)
 
     m_locmat.resize(N);
     // pdf contains rois and initial positions of robots in normalized scale i.e., [0 - 1]
-    for (int i = 0; i < pdf.size(); ++i)
+    for (std::size_t i = 0; i < pdf.size(); ++i)
     {
         m_costMatrix[i] = new double[N];
         m_locmat[i].resize(N);
@@ -48,12 +48,15 @@ double TaskAllocation::polyLength(const std::vector<Point2D> &poly)
     return totalDist;
 }
 
-Node *TaskAllocation::newNode(int x, int y, bool assigned[], Node *parent, int N)
+Node *TaskAllocation::newNode(int x, int y, const std::vector<char> &assigned, Node *parent, int N)
 {
     Node *node = new Node;
-    node->assigned = new bool[4];
+    node->assigned = new bool[N];
     for (int j = 0; j < N; j++)
+    {
         node->assigned[j] = assigned[j];
+    }
+
     node->assigned[y] = true;
 
     node->parent = parent;
@@ -111,9 +114,8 @@ double TaskAllocation::findMinCost(int N)
     // initialize heap to dummy node with cost 0
     //        int N = m_costMatrix.size();
     //        std::vector<bool> assigned(N, false);
-    std::vector<bool> assigned(N, false);
-    assigned[0] = false;
-    Node *root = newNode(-1, -1, assigned.data(), NULL, N);
+    std::vector<char> assigned(N, 0); // Use char instead of bool
+    Node *root = newNode(-1, -1, assigned, NULL, N);
     root->pathCost = root->cost = 0;
     root->workerID = -1;
 
@@ -149,15 +151,19 @@ double TaskAllocation::findMinCost(int N)
             // If unassigned
             if (!min->assigned[j])
             {
+                // Convert bool* to std::vector<char>
+                std::vector<char> assignedVec(N);
+                for (int k = 0; k < N; k++)
+                    assignedVec[k] = min->assigned[k];
+
                 // create a new tree node
-                Node *child = newNode(i, j, min->assigned, min, N);
+                Node *child = newNode(i, j, assignedVec, min, N);
 
                 // cost for ancestors nodes including current node
                 child->pathCost = min->pathCost + m_costMatrix[i][j];
 
                 // calculate its lower bound
                 child->cost = child->pathCost + calculateCost(i, j, child->assigned, N);
-                //              computeCost(m_costMatrix, i, j, child->assigned);
 
                 // Add child to list of live nodes;
                 pq.push(child);

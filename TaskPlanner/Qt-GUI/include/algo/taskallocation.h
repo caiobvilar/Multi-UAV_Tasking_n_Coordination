@@ -64,8 +64,7 @@ protected:
     double polyLength(const std::vector<Point2D> &poly);
     // Function to allocate a new search tree node
     // Here Person x is assigned to job y
-    Node *newNode(int x, int y, bool assigned[], Node *parent, int N);
-
+    Node *newNode(int x, int y, const std::vector<char> &assigned, Node *parent, int N);
     // Function to calculate the least promising cost
     // of node after worker x is assigned to job y.
     double calculateCost(int x, int j, bool assigned[], int N);

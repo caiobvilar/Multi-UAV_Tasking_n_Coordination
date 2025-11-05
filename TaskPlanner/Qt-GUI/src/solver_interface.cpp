@@ -1,6 +1,6 @@
 #include "solver_interface.h"
 
-solver_interface::solver_interface(const METHOD &method, pdfPtr pdf, QObject *parent) : m_method(method), m_pdf(pdf)
+solver_interface::solver_interface(const METHOD &method, pdfPtr pdf, QObject * /*parent*/) : m_method(method), m_pdf(pdf)
 {
 }
 
@@ -98,7 +98,7 @@ std::vector<double> solver_interface::length(const solver_interface::DataType &s
     for (auto &poly : sweep_paths)
     {
         double path_length = 0;
-        for (int i = 0; i < poly.size() - 1; ++i)
+        for (std::size_t i = 0; i < poly.size() - 1; ++i)
         {
             arma::vec2 a{poly[i].x, poly[i].y};
             arma::vec2 b{poly[i + 1].x, poly[i + 1].y};
@@ -117,7 +117,7 @@ void solver_interface::publish()
 {
 
     qDebug() << "[solver interface] publishing messages";
-    for (int i = 0; i < m_pdf->size(); ++i)
+    for (std::size_t i = 0; i < m_pdf->size(); ++i)
     {
         std::vector<Point2D> area;
         getArea(area, i);
@@ -140,7 +140,7 @@ void solver_interface::publish()
     // alocate task
     TaskAllocation tasks(*m_pdf);
     QVector<double> allocations;
-    for (int i = 0; i < m_pdf->size(); ++i)
+    for (std::size_t i = 0; i < m_pdf->size(); ++i)
     {
         auto alocat = tasks(i).second;
         std::cout << "[Allocation] Robot " << char(i + 'A') << " = " << alocat << std::endl;

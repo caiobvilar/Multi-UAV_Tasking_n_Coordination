@@ -17,18 +17,20 @@ Background::Background(QObject *parent) : QObject(parent)
 
 Background::~Background()
 {
-//    delete m_solver;
-
+    //    delete m_solver;
 }
 
 QString Background::cmdButton()
 {
-
+    if (m_cmdButton == CLEAR)
+        return "clear";
+    else
+        return "okay";
 }
 
 void Background::setcmdButton(const QString &cmdButton)
 {
-    if( cmdButton == "clear")
+    if (cmdButton == "clear")
     {
         m_cmdButton = CLEAR;
         m_mousePoints.clear();
@@ -37,29 +39,31 @@ void Background::setcmdButton(const QString &cmdButton)
     else
     {
         m_cmdButton = OKAY;
-//        qDebug() << cmdButton;
+        //        qDebug() << cmdButton;
 
-        if(m_mousePoints.size() < 2)
+        if (m_mousePoints.size() < 2)
             return;
 
         m_pdf->addInstance(m_mousePoints);
         // pass them to solver
-        try {
+        try
+        {
             m_cThread = new QThread;
             m_solver->setup(m_cThread);
             m_solver->moveToThread(m_cThread);
             m_cThread->start();
-        }  catch (std::exception& e) {
+        }
+        catch (std::exception &e)
+        {
             qDebug() << e.what();
         }
 
-    }// --------------------------------------------- X --------------------------------------------
-
+    } // --------------------------------------------- X --------------------------------------------
 }
 
 QString Background::mousePoint()
 {
-
+    return "";
 }
 
 void Background::setmousePoint(const QString &mousePoint)
@@ -67,7 +71,7 @@ void Background::setmousePoint(const QString &mousePoint)
     auto data = mousePoint.split(",");
     auto point = Point2D{data[0].toDouble(), data[1].toDouble()};
     m_mousePoints.emplace_back(point * 100);
-//    qDebug() << mousePoint;
+    //    qDebug() << mousePoint;
 }
 
 QVector<double> Background::drawLineX()
@@ -106,5 +110,4 @@ void Background::setRobots(const QVector<double> &positions)
     m_robots.clear();
     std::copy(positions.begin(), positions.end(), std::back_inserter(m_robots));
     emit drawRobotsChanged();
-
 }

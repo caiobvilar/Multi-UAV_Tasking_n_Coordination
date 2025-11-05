@@ -16,7 +16,8 @@
 class QuadBodyMotion
 {
 public:
-    QuadBodyMotion(const string &name, int robot_id, float yaw, shared_ptr<ReceedingHorizon> rh) : rh(rh), name(name), robot_id(robot_id), yaw(yaw)
+    QuadBodyMotion(const string &name, int robot_id, float yaw, shared_ptr<ReceedingHorizon> rh)
+        : yaw(yaw), rh(rh), name(name), robot_id(robot_id)
     {
         q = 0;
         quadrotorView = nh.advertise<sensor_msgs::JointState>(name + "joint_states", 1);
@@ -24,7 +25,6 @@ public:
         timer = nh.createTimer(ros::Duration(0.03), &QuadBodyMotion::timerCallback, this);
         initialized = false;
     }
-
     vector<double> getState(int robotID)
     {
         auto p = rh->getCoord(robotID);
@@ -83,7 +83,7 @@ public:
         initialized = true;
     }
 
-    void timerCallback(const ros::TimerEvent &event)
+    void timerCallback(const ros::TimerEvent & /*event*/)
     {
 
         update_controller(robot_id);
