@@ -9,6 +9,7 @@ RUN apt-get update && \
         clang \
         clang-tools \
         llvm \
+        gdb \
         build-essential \
         clang-format \
         clang-tidy \
