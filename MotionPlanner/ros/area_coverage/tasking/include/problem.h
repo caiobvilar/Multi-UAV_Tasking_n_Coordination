@@ -23,6 +23,12 @@ public:
     std::vector<POINT> initial_positions_;
     RosIntegration()
     {
+        // ADD SAFETY CHECK
+        if (!ros::isInitialized())
+        {
+            std::cerr << "ROS not initialized! Skipping publisher setup.\n";
+            return;
+        }
         task_pub = nh.advertise<geometry_msgs::PoseArray>("/multiquad/tasks", 10);
         exec_pub = nh.advertise<geometry_msgs::PoseArray>("/multiquad/exec", 10);
     }
@@ -76,9 +82,22 @@ class problem : public std::enable_shared_from_this<problem>, public RosIntegrat
     friend class logger;
 
 public:
+    std::mutex m;
+    std::condition_variable cv;
     problem()
     {
         ready = false;
+        // EXPLICITLY initialize vectors to valid empty state
+        roi_.clear();
+        input_.clear();
+
+        // Reserve small capacity to ensure proper initialization
+        roi_.reserve(4);
+        input_.reserve(4);
+
+        std::cerr << "[DEBUG] problem constructed" << std::endl;
+        std::cerr << "[DEBUG] input_ size: " << input_.size() << std::endl;
+        std::cerr << "[DEBUG] input_ address: " << &input_ << std::endl;
     }
     std::shared_ptr<problem> getPtr()
     {
@@ -102,6 +121,13 @@ public:
 
     void add_vertex(double x, double y)
     {
+        //  ADD SAFETY CHECK
+        if (input_.size() > 1000000)
+        {
+            std::cerr << "[ERROR] input_ vector corrupted! Size: " << input_.size() << std::endl;
+            std::cerr << "[ERROR] Address of input_: " << &input_ << std::endl;
+            return;
+        }
         input_.push_back(make_point(x, y));
     }
 
@@ -209,8 +235,6 @@ protected:
     std::vector<double> uav_batteries_, sensor_footprints_;
 
 public:
-    std::mutex m;
-    std::condition_variable cv;
     bool ready, processed;
     std::vector<double> veolcity_limits_;
     PLANNER_TYPE plannerType;

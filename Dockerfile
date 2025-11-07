@@ -44,6 +44,11 @@ RUN apt-get update && \
         libxcb-xfixes0 \
         libxcb-randr0 \
         libxcb-util1 \
+        libxcb-glx0 \
+        qt5-default \
+        qtbase5-dev \
+        qtbase5-dev-tools \
+        libqt5gui5 \
         libdbus-1-3 \
         libavcodec-dev \
         libavformat-dev \

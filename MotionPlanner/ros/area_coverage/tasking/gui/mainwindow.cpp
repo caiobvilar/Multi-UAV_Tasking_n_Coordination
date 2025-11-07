@@ -35,7 +35,10 @@ void MainWindow::clickedGraph(QMouseEvent *event)
     x = ui->widget->xAxis->pixelToCoord(point.x());
     y = ui->widget->yAxis->pixelToCoord(point.y());
     draw->addPoints(x, y);
-    prob_instance->add_vertex(x, y);
+    {
+        std::lock_guard<std::mutex> lk(prob_instance->m);
+        prob_instance->add_vertex(x, y);
+    }
 }
 
 void MainWindow::on_comboBox_currentIndexChanged(int index)

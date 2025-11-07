@@ -21,6 +21,9 @@ class problem : public std::enable_shared_from_this<problem>
     friend class logger;
 
 public:
+    // SYNCHRONIZATION PRIMITIVES
+    std::mutex m;
+    std::condition_variable cv;
     problem()
     {
         ready = false;
@@ -195,13 +198,14 @@ protected:
     std::vector<double> uav_batteries_, sensor_footprints_;
 
 public:
-    std::mutex m;
-    std::condition_variable cv;
+    // SIMPLE type
     bool ready, processed;
+    PLANNER_TYPE plannerType;
+
+    // Complex types
     std::vector<wykobi::polygon<double, 2>> decompose_areas, sweep_paths, sweep_trajs;
     std::vector<POINT> initial_positions_;
     std::vector<double> veolcity_limits_;
-    PLANNER_TYPE plannerType;
 };
 
 #endif // AREACOVERAGE_PROBLEM_H

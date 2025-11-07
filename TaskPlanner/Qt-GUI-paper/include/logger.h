@@ -7,6 +7,7 @@
 
 #include "pch.h"
 
+static std::mutex cout_mutex;
 class logger
 {
 public:
@@ -17,12 +18,16 @@ public:
         QDir current;
         current.mkdir("output");
     }
-    ~logger()
+    void join()
     {
         if (logger_thread_.joinable())
         {
             logger_thread_.join();
         }
+    }
+    ~logger()
+    {
+        this->join();
     }
     void write_json(const QJsonObject &data) const
     {
@@ -95,7 +100,10 @@ public:
 
     void execute()
     {
-        std::cout << "[logger] logging problem ...\n";
+        {
+            std::lock_guard<std::mutex> lock(cout_mutex);
+            std::cout << "[logger] logging problem ...\n";
+        }
         auto solver_ = m_solver_.lock();
         do
         {
@@ -107,7 +115,10 @@ public:
 
             if (!solver_->STOP)
             {
-                std::cout << "[logger] writing log \n";
+                {
+                    std::lock_guard<std::mutex> lock(cout_mutex);
+                    std::cout << "[logger] writing log \n";
+                }
                 QJsonObject data;
                 point_to_json(solver_->initial_positions_, data, "initial_positions");
                 std::vector<POINT> roi;
@@ -126,7 +137,10 @@ public:
             lk.unlock();
 
         } while (!solver_->STOP);
-        std::cout << "[logger] terminated \n";
+        {
+            std::lock_guard<std::mutex> lock(cout_mutex);
+            std::cout << "[logger] terminated \n";
+        }
     }
 
     void Start()

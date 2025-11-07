@@ -5,6 +5,7 @@
 #include <cmath>
 using namespace std;
 
+static std::mutex cout_mutex;
 MainWindow::MainWindow(std::shared_ptr<problem> instance, QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow), prob_instance(instance)
 {
@@ -35,6 +36,12 @@ void MainWindow::clickedGraph(QMouseEvent *event)
     if (!event)
     {
         qWarning() << "clickedGraph: null event";
+        return;
+    }
+    // CHECK IF PROB_INSTANCE IS VALID
+    if (!prob_instance)
+    {
+        qDebug() << "[MainWindow] Error: prob_instance is null!";
         return;
     }
 
@@ -71,7 +78,16 @@ void MainWindow::clickedGraph(QMouseEvent *event)
     }
 
     draw->addPoints(x, y);
-    prob_instance->add_vertex(x, y);
+    try
+    {
+        std::lock_guard<std::mutex> lk(prob_instance->m);
+        prob_instance->add_vertex(x, y);
+    }
+    catch (const std::system_error &e)
+    {
+        qDebug() << "[MainWindow] Mutex lock failed:" << e.what();
+        return;
+    }
 }
 
 void MainWindow::on_comboBox_currentIndexChanged(int index)
@@ -198,7 +214,10 @@ void MainWindow::on_solveButton_clicked()
     {
         std::lock_guard<std::mutex> lk(prob_instance->m);
         prob_instance->ready = true;
-        std::cout << "[gui] problem is ready for solving\n";
+        {
+            std::lock_guard<std::mutex> lock(cout_mutex);
+            std::cout << "[gui] problem is ready for solving\n";
+        }
     }
     prob_instance->cv.notify_all();
 }

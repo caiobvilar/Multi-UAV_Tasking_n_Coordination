@@ -118,7 +118,11 @@ void TriangleDecomposition<T>::printParent(std::weak_ptr<Node> node_, T &result)
         return;
     result = node->data;
     printParent(node->parent.lock(), result);
-    std::cout << node->data << " : ";
+    {
+        static std::mutex cout_mutex;
+        std::lock_guard<std::mutex> lock(cout_mutex);
+        std::cout << node->data << " : ";
+    }
 }
 
 template <typename T>

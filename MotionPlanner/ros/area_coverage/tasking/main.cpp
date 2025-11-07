@@ -15,12 +15,13 @@ int main(int argc, char *argv[])
 
     auto prob = make_shared<solver>();
     auto log = make_shared<logger>(prob);
-    MainWindow w(prob);
+    MainWindow window(prob);
 
-    log->Start();
-    prob->Start();
+    window.show();
 
-    w.show();
+    // log->Start();
+    // prob->Start();
+
     int ret = a.exec();
 
     prob->STOP = true;
