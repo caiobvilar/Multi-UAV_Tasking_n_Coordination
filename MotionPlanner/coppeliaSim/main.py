@@ -2,7 +2,7 @@
 import json 
 import sys 
 import os 
-lib_path = "/home/redwan/PycharmProjects/MILP"
+lib_path = "/workspaces/Multi-UAV_Tasking_n_Coordination/MotionPlanner/coppeliaSim"
 sys.path.append(lib_path)
 from QuadMILP import Path, TrajManager
 
@@ -28,7 +28,7 @@ class QuadManager(TrajManager):
         
 def sysCall_thread():
     # e.g. non-synchronized loop:
-    filename = '/home/redwan/PycharmProjects/MILP/test/area_decomposition_02.json'
+    filename = '/test/area_decomposition_02.json'
     with open(os.path.join(lib_path, filename)) as file:
         jdata = json.load(file)
     

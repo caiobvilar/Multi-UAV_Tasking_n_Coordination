@@ -50,4 +50,5 @@ add_library(gui
 target_link_libraries(gui
         Qt5::Widgets
         Qt5::PrintSupport
-        Qt5::Core)
+        Qt5::Core
+        ${catkin_LIBRARIES})

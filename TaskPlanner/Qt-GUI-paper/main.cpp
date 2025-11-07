@@ -5,18 +5,21 @@
 #include "logger.h"
 
 using namespace std;
-int main(int argc, char *argv[]) {
+
+int main(int argc, char *argv[])
+{
 
     auto prob = make_shared<solver>();
     auto log = make_shared<logger>(prob);
-    QApplication a(argc, argv);
-    MainWindow w(prob->getPtr());
 
-    log->Start();
-    prob->Start();
+    QApplication a(argc, argv);
+    MainWindow w(prob);
+
+    // log->Start();
+    // prob->Start();
 
     w.show();
-    int ret =  a.exec();
+    int ret = a.exec();
 
     prob->STOP = true;
     // terminate worker thread
@@ -27,5 +30,9 @@ int main(int argc, char *argv[]) {
         std::cout << "main() sent kill signals \n";
     }
     prob->cv.notify_all();
+    // Wait for threads to finish
+    log->join();
+    prob->join();
+    std::cout << "All threads joined. Exiting safely." << std::endl;
     return ret;
 }

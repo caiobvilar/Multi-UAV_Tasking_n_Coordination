@@ -10,10 +10,18 @@
 #include "problem.h"
 #include <QDebug>
 
-class solver :public problem{
+class solver : public problem
+{
 public:
     solver();
     ~solver();
+    void join()
+    {
+        if (solver_thread.joinable())
+        {
+            solver_thread.join();
+        }
+    }
     void solve();
     void Start();
     bool STOP, logging;
@@ -22,5 +30,4 @@ private:
     std::thread solver_thread;
 };
 
-
-#endif //AREACOVERAGE_SOLVER_H
+#endif // AREACOVERAGE_SOLVER_H

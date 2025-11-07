@@ -15,20 +15,23 @@ vector<Point> RotatingCalipers::convexHull(vector<Point> P)
 {
     size_t n = P.size();
     size_t k = 0;
-    if (n <= 3) return P;
+    if (n <= 3)
+        return P;
 
     vector<Point> H(2 * n);
     sort(P.begin(), P.end());
 
     for (size_t i = 0; i < n; ++i)
     {
-        while (k >= 2 && cross(H[k - 2], H[k - 1], P[i]) <= 0) k--;
+        while (k >= 2 && cross(H[k - 2], H[k - 1], P[i]) <= 0)
+            k--;
         H[k++] = P[i];
     }
 
     for (size_t i = n - 1, t = k + 1; i > 0; --i)
     {
-        while (k >= t && cross(H[k - 2], H[k - 1], P[i - 1]) <= 0) k--;
+        while (k >= t && cross(H[k - 2], H[k - 1], P[i - 1]) <= 0)
+            k--;
         H[k++] = P[i - 1];
     }
     H.resize(k - 1);
@@ -39,11 +42,14 @@ double RotatingCalipers::diameter(const vector<Point> &p)
 {
     vector<Point> h = convexHull(p);
     size_t m = h.size();
-    if (1 == m) return 0;
-    if (2 == m) return dist(h[0], h[1]);
+    if (1 == m)
+        return 0;
+    if (2 == m)
+        return dist(h[0], h[1]);
 
     size_t k = 1;
-    while (area(h[m - 1], h[0], h[(k + 1) % m]) > area(h[m - 1], h[0], h[k])) k++;
+    while (area(h[m - 1], h[0], h[(k + 1) % m]) > area(h[m - 1], h[0], h[k]))
+        k++;
 
     double res = 0;
     for (size_t i = 0, j = k; i <= k && j < m; i++)
@@ -61,11 +67,10 @@ double RotatingCalipers::diameter(const vector<Point> &p)
 MinAreaRect RotatingCalipers::minAreaRect(const vector<Point> &p)
 {
     vector<Point> points = convexHull(p);
-//    cout << "convexHull" << endl;
-//    for (size_t i = 0; i < points.size(); i++)
-//        cout << "(" << points[i].x << "," << points[i].y << ")," << endl;
+    //    cout << "convexHull" << endl;
+    //    for (size_t i = 0; i < points.size(); i++)
+    //        cout << "(" << points[i].x << "," << points[i].y << ")," << endl;
     double min_area = numeric_limits<double>::max();
-    double max_dist = 0;
     size_t left = 0, bottom = 0, right = 0, top = 0;
 
     /* rotating calipers sides will always have coordinates
@@ -179,28 +184,28 @@ MinAreaRect RotatingCalipers::minAreaRect(const vector<Point> &p)
         max_cos = (cos_alpha > max_cos) ? (main_element = 3, cos_alpha) : max_cos;
 
         /*rotate calipers*/
-        //get next base
+        // get next base
         size_t pindex = seq[main_element];
         double lead_x = vect[pindex].x * inv_vect_length[pindex];
         double lead_y = vect[pindex].y * inv_vect_length[pindex];
         switch (main_element)
         {
-            case 0:
-                base_a = lead_x;
-                base_b = lead_y;
-                break;
-            case 1:
-                base_a = lead_y;
-                base_b = -lead_x;
-                break;
-            case 2:
-                base_a = -lead_x;
-                base_b = -lead_y;
-                break;
-            case 3:
-                base_a = -lead_y;
-                base_b = lead_x;
-                break;
+        case 0:
+            base_a = lead_x;
+            base_b = lead_y;
+            break;
+        case 1:
+            base_a = lead_y;
+            base_b = -lead_x;
+            break;
+        case 2:
+            base_a = -lead_x;
+            base_b = -lead_y;
+            break;
+        case 3:
+            base_a = -lead_y;
+            base_b = lead_x;
+            break;
         }
 
         /* change base point of main edge */
@@ -217,16 +222,15 @@ MinAreaRect RotatingCalipers::minAreaRect(const vector<Point> &p)
         if (area <= min_area)
         {
             min_area = area;
-            min_area_state.base_a = base_a;//buf[1]
-            min_area_state.base_b = base_b;//buf[3]
-            min_area_state.width = width;//buf[2]
-            min_area_state.height = height;//buf[4]
-            min_area_state.left = seq[3];//buf[0]
-            min_area_state.bottom = seq[0];//buf[5]
-            min_area_state.area = area;//buf[6]
+            min_area_state.base_a = base_a; // buf[1]
+            min_area_state.base_b = base_b; // buf[3]
+            min_area_state.width = width;   // buf[2]
+            min_area_state.height = height; // buf[4]
+            min_area_state.left = seq[3];   // buf[0]
+            min_area_state.bottom = seq[0]; // buf[5]
+            min_area_state.area = area;     // buf[6]
         }
     }
-
 
     double A1 = min_area_state.base_a;
     double B1 = min_area_state.base_b;

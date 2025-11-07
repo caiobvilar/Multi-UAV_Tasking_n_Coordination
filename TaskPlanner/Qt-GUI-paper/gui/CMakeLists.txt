@@ -42,12 +42,12 @@ set(HEADER_FILES
 
         )
 
-add_library(gui
+add_library(gui-paper
         ${SRC_FILES}
         ${HEADER_FILES}
         )
 
-target_link_libraries(gui
+target_link_libraries(gui-paper
         Qt5::Widgets
         Qt5::PrintSupport
         Qt5::Core)
