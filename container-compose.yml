@@ -5,6 +5,9 @@ services:
     environment:
       - DISPLAY
       - QT_DEBUG_PLUGINS=1
+      - LANG=en_US.UTF-8
+      - LANGUAGE=en_US:en
+      - LC_ALL=en_US.UTF-8
       # You may add more variables if needed for ROS/Python
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix

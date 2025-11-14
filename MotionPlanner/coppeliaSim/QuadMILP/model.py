@@ -5,6 +5,7 @@ from .RobotModel import RobotModel
 from collections import defaultdict
 from itertools import combinations
 import logging
+import re
 logging.basicConfig(level=logging.ERROR)
 
 setParam('OutputFlag', 0)
