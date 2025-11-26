@@ -12,7 +12,7 @@ struct Node
 {
     // stores parent node of current node
     // helps in tracing path when answer is found
-    Node* parent;
+    Node *parent;
 
     // contains cost for ancestors nodes
     // including current node
@@ -32,12 +32,12 @@ struct Node
     bool *assigned;
 };
 
-
 class TaskAllocation
 {
     using MATRIX = std::vector<std::vector<Point2D>>;
+
 public:
-    TaskAllocation(const ProblemDefinition& pdf);
+    TaskAllocation(const ProblemDefinition &pdf);
 
     double findMinCost(int N);
 
@@ -52,25 +52,22 @@ private:
     std::unordered_map<int, std::pair<int, Point2D>> m_assignments;
     struct comp
     {
-        bool operator()(const Node* lhs,
-                       const Node* rhs) const
+        bool operator()(const Node *lhs,
+                        const Node *rhs) const
         {
             return lhs->cost > rhs->cost;
         }
     };
+
 protected:
     void populateAssignments(Node *min);
-    double polyLength(const std::vector<Point2D>& poly);
+    double polyLength(const std::vector<Point2D> &poly);
     // Function to allocate a new search tree node
     // Here Person x is assigned to job y
-    Node* newNode(int x, int y, bool assigned[], Node* parent, int N);
-
-
+    Node *newNode(int x, int y, const std::vector<char> &assigned, Node *parent, int N);
     // Function to calculate the least promising cost
     // of node after worker x is assigned to job y.
-    double calculateCost(int x, int y, bool assigned[], int N);
-
-
+    double calculateCost(int x, int j, bool assigned[], int N);
 };
 
 #endif // TASKALLOCATION_H

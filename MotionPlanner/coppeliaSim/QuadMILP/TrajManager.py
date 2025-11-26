@@ -23,6 +23,15 @@ class State():
         return f"[robot {self.id}]: {self.positions}"
 
 class TrajManager:
+    def __init__(self, sim):
+        super().__init__()
+        self.sim = sim
+        quadNames = ['/Quadcopter[%d]'%i for i in range(3)]
+        targetNames = ['/target[%d]'%i for i in range(3)]
+        self.quadHandles = [sim.getObject(quad) for quad in quadNames]
+        self.targetHandles = [sim.getObject(target) for target in targetNames]
+        self.altitude = self.getPositions()[0][-1]
+
     def get_yaw_angle(self, predicted_traj):
         first_point = predicted_traj[0]
         last_point = predicted_traj[-1]
@@ -60,14 +69,15 @@ class TrajManager:
             robots.append(robot)
         print("Trajecotry following .... (%d)"%len(robots[0].waypoints))
         
-
         while self.isRunning(robots):
             try:
-                solver = Solver(robots)
+                sim_time = self.sim.getSimulationTime() if hasattr(self, "sim") and self.sim is not None else None
+                solver = Solver(robots, sim_time=sim_time)
                 if solver.solve():
                     for count, r in enumerate(robots):
                         traj = self.gen_traj_msg(r, count)
-                        yield traj 
+                        yield traj
                 sleep(delay)
             except KeyboardInterrupt:
                 break
+

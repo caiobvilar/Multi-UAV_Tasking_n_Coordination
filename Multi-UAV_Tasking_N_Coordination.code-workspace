@@ -1,0 +1,109 @@
+{
+  "folders": [
+    {
+      "name": "Multi-UAV_Tasking_n_Coordination (Root)",
+      "path": "."
+    },
+  ],
+  "settings": {
+    "files.exclude": {
+      "**/__pycache__": true,
+      "**/*.pyc": true,
+      "**/build": true,
+      "**/*.o": true,
+      "**/*.so": true,
+      "**/devel": true
+    },
+    "files.associations": {
+      "*.ttt": "xml",
+      "*.launch": "xml",
+      "*.urdf": "xml",
+      "*.xacro": "xml",
+      "*.msg": "plaintext",
+      "*.srv": "plaintext",
+      "*.action": "plaintext",
+      "CMakeLists.txt": "cmake",
+      "*.cmake": "cmake",
+      "variant": "cpp",
+      "chrono": "cpp",
+      "random": "cpp",
+      "limits": "cpp",
+      "algorithm": "cpp",
+      "bitset": "cpp",
+      "deque": "cpp",
+      "list": "cpp",
+      "string": "cpp",
+      "unordered_map": "cpp",
+      "vector": "cpp",
+      "system_error": "cpp",
+      "armadillo": "cpp"
+    },
+    "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
+    "cmake.configureOnOpen": true,
+    "[python]": {
+      "editor.tabSize": 4,
+      "editor.insertSpaces": true
+    },
+    "[cpp]": {
+      "editor.tabSize": 4,
+      "editor.insertSpaces": true
+    },
+    "editor.formatOnSave": true,
+    "clang-format.language.cpp.enable": true,
+    "clang-format.style": "file",
+    "clang-format.assumeFilename": "clang-format"
+  },
+  "extensions": {
+    "recommendations": [
+      "ms-vscode.cpptools",
+      "ms-vscode.cmake-tools",
+      "twxs.cmake",
+      "ms-python.python",
+      "ms-python.vscode-pylance",
+      "redhat.vscode-yaml"
+    ]
+  },
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "(gdb) Launch Task Planner CLI",
+        "type": "cppdbg",
+        "request": "launch",
+        "program": "${workspaceFolder:Multi-UAV_Tasking_n_Coordination (Root)}/build/TaskPlanner/CLI/BenchmarkAreaCoverage",
+        "args": [],
+        "stopAtEntry": false,
+        "cwd": "${workspaceFolder:TaskPlanner}/CLI",
+        "environment": [],
+        "externalConsole": false,
+        "MIMode": "gdb",
+        "setupCommands": [
+          {
+            "description": "Enable pretty-printing for gdb",
+            "text": "-enable-pretty-printing",
+            "ignoreFailures": true
+          }
+        ]
+      },
+      {
+        "name": "Python: Current File",
+        "type": "debugpy",
+        "request": "launch",
+        "program": "${file}",
+        "console": "integratedTerminal",
+        "justMyCode": false
+      },
+      {
+        "name": "Python: ROS Node",
+        "type": "debugpy",
+        "request": "launch",
+        "program": "${file}",
+        "console": "integratedTerminal",
+        "env": {
+          "PYTHONPATH": "${env:PYTHONPATH}",
+          "ROS_PACKAGE_PATH": "${env:ROS_PACKAGE_PATH}"
+        }
+      }
+    ]
+  },
+}

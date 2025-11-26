@@ -7,20 +7,29 @@
 
 #include "pch.h"
 
+static std::mutex cout_mutex;
 class logger
 {
 public:
-    logger(std::shared_ptr<solver>& solver) : m_solver_(solver), logger_thread_() {
+    logger(std::shared_ptr<solver> &solver) : logger_thread_(), m_solver_(solver)
+    {
 
-//        QDir::mkdir(const QString &dirName)
+        //        QDir::mkdir(const QString &dirName)
         QDir current;
         current.mkdir("output");
     }
-    ~logger(){
-        if(logger_thread_.joinable())
+    void join()
+    {
+        if (logger_thread_.joinable())
+        {
             logger_thread_.join();
+        }
     }
-    void write_json(const QJsonObject & data) const
+    ~logger()
+    {
+        this->join();
+    }
+    void write_json(const QJsonObject &data) const
     {
         // write json file
         QJsonDocument JsonDocument;
@@ -31,7 +40,7 @@ public:
         QFile file2(filepath);
         file2.remove();
 #else
-              // set a filename from timestamp
+        // set a filename from timestamp
         const QDateTime now = QDateTime::currentDateTime();
         const QString timestamp = now.toString(QLatin1String("yyyyMMdd-hhmmsszzz"));
         // write json file to a file
@@ -44,14 +53,15 @@ public:
         file.close();
     }
 
-    void polygon_to_json(const std::vector<wykobi::polygon<double, 2>>&polygons, QJsonObject &data, const QString& field)
+    void polygon_to_json(const std::vector<wykobi::polygon<double, 2>> &polygons, QJsonObject &data, const QString &field)
     {
         QJsonObject temp;
         int j = 0;
-        for(auto &poly:polygons)
+        for (auto &poly : polygons)
         {
-            QJsonArray x,y;
-            for (int i = 0; i < poly.size(); ++i) {
+            QJsonArray x, y;
+            for (std::size_t i = 0; i < poly.size(); ++i)
+            {
                 x.append(poly[i].x);
                 y.append(poly[i].y);
             }
@@ -61,14 +71,13 @@ public:
             temp[QString::number(j++)] = val;
         }
         data[field] = temp;
-
     }
 
-    template<typename T>
-    void point_to_json(const std::vector<T>& initial_positions, QJsonObject &data, const QString& field)
+    template <typename T>
+    void point_to_json(const std::vector<T> &initial_positions, QJsonObject &data, const QString &field)
     {
-        QJsonArray x,y;
-        for(auto &pos:initial_positions)
+        QJsonArray x, y;
+        for (auto &pos : initial_positions)
         {
             x.append(pos.x);
             y.append(pos.y);
@@ -79,50 +88,59 @@ public:
         data[field] = val;
     }
 
-    template<typename T>
-    void vector_to_json(const std::vector<T>& variable, QJsonObject &data, const QString& field)
+    template <typename T>
+    void vector_to_json(const std::vector<T> &variable, QJsonObject &data, const QString &field)
     {
 
         QJsonArray temp;
-        for(auto& val:variable)
+        for (auto &val : variable)
             temp.append(val);
         data[field] = temp;
-
     }
 
     void execute()
     {
-        std::cout << "[logger] logging problem ...\n";
+        {
+            std::lock_guard<std::mutex> lock(cout_mutex);
+            std::cout << "[logger] logging problem ...\n";
+        }
         auto solver_ = m_solver_.lock();
-        do {
+        do
+        {
             std::unique_lock<std::mutex> lk(solver_->m);
 
-            solver_->cv.wait(lk, [=] { return solver_->logging; });
+            solver_->cv.wait(lk, [=]
+                             { return solver_->logging; });
             // todo write logs
 
-
-            if(!solver_->STOP)
+            if (!solver_->STOP)
             {
-                std::cout<< "[logger] writing log \n";
+                {
+                    std::lock_guard<std::mutex> lock(cout_mutex);
+                    std::cout << "[logger] writing log \n";
+                }
                 QJsonObject data;
-                point_to_json(solver_->initial_positions_,data,"initial_positions");
+                point_to_json(solver_->initial_positions_, data, "initial_positions");
                 std::vector<POINT> roi;
                 std::copy(solver_->roi_.begin(), solver_->roi_.end(), std::back_inserter(roi));
-                point_to_json(roi,data,"roi");
+                point_to_json(roi, data, "roi");
 
-                vector_to_json(solver_->veolcity_limits_,data,"max_velocities");
-                vector_to_json(solver_->uav_batteries_,data,"batteries");
-                vector_to_json(solver_->sensor_footprints_,data,"footprints");
-                polygon_to_json(solver_->decompose_areas,data,"areas");
-                polygon_to_json(solver_->sweep_paths,data,"paths");
+                vector_to_json(solver_->veolcity_limits_, data, "max_velocities");
+                vector_to_json(solver_->uav_batteries_, data, "batteries");
+                vector_to_json(solver_->sensor_footprints_, data, "footprints");
+                polygon_to_json(solver_->decompose_areas, data, "areas");
+                polygon_to_json(solver_->sweep_paths, data, "paths");
 
                 write_json(data);
                 solver_->logging = false;
             }
             lk.unlock();
 
-        }while (!solver_->STOP);
-        std::cout<< "[logger] terminated \n";
+        } while (!solver_->STOP);
+        {
+            std::lock_guard<std::mutex> lock(cout_mutex);
+            std::cout << "[logger] terminated \n";
+        }
     }
 
     void Start()
@@ -135,4 +153,4 @@ private:
     std::weak_ptr<solver> m_solver_;
 };
 
-#endif //AREACOVERAGE_LOGGER_H
+#endif // AREACOVERAGE_LOGGER_H

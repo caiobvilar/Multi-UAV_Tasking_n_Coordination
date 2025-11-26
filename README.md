@@ -1,5 +1,5 @@
 # Multi-UAV Coordination and Control for Smart Agriculture 
-This repository contains codes for deploying a cooperative team of UAVs equipped with necessary sensor payloads for effective regular surveying of agricultural fields for detecting possible zones with damage or nutrition deficiency.
+This repository contains codes for reproducing the results obtained in the paper https://dl.acm.org/doi/pdf/10.1145/3749194
 
 ## Overview 
 For monitoring of a farm land using multi-UAV platform, first, an area of interest is captured as a convex polygon and decomposed into several partitions to assign them to different UAVs based on their flying and sensing capabilities. 

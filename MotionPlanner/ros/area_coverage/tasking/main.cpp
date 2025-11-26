@@ -6,8 +6,8 @@
 #include "logger.h"
 
 using namespace std;
-int main(int argc, char *argv[]) {
-
+int main(int argc, char *argv[])
+{
 
     QApplication a(argc, argv);
     ros::init(argc, argv, "coverage_tasking");
@@ -15,13 +15,14 @@ int main(int argc, char *argv[]) {
 
     auto prob = make_shared<solver>();
     auto log = make_shared<logger>(prob);
-    MainWindow w(prob->getPtr());
+    MainWindow window(prob);
 
-    log->Start();
-    prob->Start();
+    window.show();
 
-    w.show();
-    int ret =  a.exec();
+    // log->Start();
+    // prob->Start();
+
+    int ret = a.exec();
 
     prob->STOP = true;
     // terminate worker thread

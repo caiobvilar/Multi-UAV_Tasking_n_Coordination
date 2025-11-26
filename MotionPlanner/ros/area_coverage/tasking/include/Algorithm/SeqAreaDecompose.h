@@ -10,20 +10,21 @@
 
 namespace TaskPlanning
 {
-    struct Node{
+    struct Node
+    {
         double data; // area
-        std::vector<Node*>children;
-        Node* parent;
+        std::vector<Node *> children;
+        Node *parent;
         /**
-          * @brief a simple data structure for area decomposition
-          * @param val : area of a triangle
-          * @param num_child : the first children of root node are directly come from polygon triangulation algorithm.
-          * We then iteratively subdivide each triangle into two based on the relative capabilities of uavs.
-          * @param parent : our goal is to subdivide and merge each triangle from polygon triangulation algorithm
-          * in a such way that enables area (task) allocation for uavs, where each area is a convex polygon.
-          * Thus, we need to trace parents to perform area allocation efficiently.
-          */
-        Node(int val, int num_child, Node* parent = nullptr)
+         * @brief a simple data structure for area decomposition
+         * @param val : area of a triangle
+         * @param num_child : the first children of root node are directly come from polygon triangulation algorithm.
+         * We then iteratively subdivide each triangle into two based on the relative capabilities of uavs.
+         * @param parent : our goal is to subdivide and merge each triangle from polygon triangulation algorithm
+         * in a such way that enables area (task) allocation for uavs, where each area is a convex polygon.
+         * Thus, we need to trace parents to perform area allocation efficiently.
+         */
+        Node(int val, int num_child, Node *parent = nullptr)
         {
             data = val;
             children.resize(num_child);
@@ -36,15 +37,17 @@ namespace TaskPlanning
         Node *root;
     };
 
-    class SeqAreaDecompose {
+    class SeqAreaDecompose
+    {
         using TASKS = std::vector<std::vector<LINE>>;
+
     public:
         /**
          * @brief sequential area decomposition and allocation method
          * @param battery: battery represents flytime for each UAV
          * For the sake of simulation, we use battery to compute relative capabilities of UAVs
          */
-        SeqAreaDecompose(const std::vector<double>& battery);
+        SeqAreaDecompose(const std::vector<double> &battery);
 
         /**
          * @brief interface for the solver. Ear-Clipping Algorithm is used to decompose_ a target polygon into a set of
@@ -52,14 +55,12 @@ namespace TaskPlanning
          * @param target polygon
          * @return a set of decomposed polygons
          */
-        std::vector<wykobi::polygon<double, 2>> solve(const wykobi::polygon<double,2>& target);
+        std::vector<wykobi::polygon<double, 2>> solve(const wykobi::polygon<double, 2> &target);
 
     private:
         std::vector<double> batteries_;
         std::unordered_map<int, std::vector<int>> sub_triangles_;
         POLYGONS result_;
-
-
 
     protected:
         /**
@@ -70,7 +71,7 @@ namespace TaskPlanning
          * into a set of non-intersecting triangles. Then we further decompose_ each triangle based on the capabilities of uavs.
          *
          */
-        void m_decompose(const wykobi::polygon<double,2>& target, const std::vector<wykobi::triangle<double,2>>& triangle_list);
+        void m_decompose(const wykobi::polygon<double, 2> &target, const std::vector<wykobi::triangle<double, 2>> &triangle_list);
         /**
          * @brief
          * @param area: total area of target polygon
@@ -84,9 +85,8 @@ namespace TaskPlanning
          * @param triangle_list a list of triangles
          * @return common point
          */
-        static POINT m_common_point_in_triangles(const std::vector<wykobi::triangle<double,2>>& triangle_list);
-};
+        static POINT m_common_point_in_triangles(const std::vector<wykobi::triangle<double, 2>> &triangle_list);
+    };
 
-};
-
-#endif //AREACOVERAGE_SEQAREADECOMPOSE_H
+}
+#endif // AREACOVERAGE_SEQAREADECOMPOSE_H
