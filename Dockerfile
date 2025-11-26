@@ -4,7 +4,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 # -------- Install basic dependencies --------
 
-RUN sed -i -E 's|([a-z]{2}\.)?archive\.ubuntu\.com|archive.ubuntu.com|g; s|security\.ubuntu\.com|security.ubuntu.com|g' /etc/apt/sources.list && \
+RUN sed -i 's|http://archive.ubuntu.com/ubuntu|http://archive.ubuntu.com/ubuntu|g' /etc/apt/sources.list && \
     apt-get update && \
     apt-get install -y \
         xz-utils \
@@ -56,6 +56,7 @@ RUN sed -i -E 's|([a-z]{2}\.)?archive\.ubuntu\.com|archive.ubuntu.com|g; s|secur
         libavformat-dev \
         libswscale-dev \
         ca-certificates \
+        wget \
         sudo \
         lsb-release \
         curl \
@@ -71,7 +72,6 @@ RUN sed -i -E 's|([a-z]{2}\.)?archive\.ubuntu\.com|archive.ubuntu.com|g; s|secur
         python3 python3-pip \
         locales && \
         locale-gen en_US.UTF-8 && \
-        wget && \
     rm -rf /var/lib/apt/lists/*
 
 # -------- Setup ROS Noetic repository --------
