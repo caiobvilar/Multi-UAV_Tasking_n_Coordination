@@ -62,7 +62,5 @@ def sysCall_thread():
     #     p[0]=p[0]+0.001
     #     sim.setObjectPosition(objHandle,-1,p)
     #     sim.switchThread() # resume in next simulation step
-    pass
-
 # See the user manual or the available code snippets for additional callback functions and details
 
