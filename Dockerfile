@@ -3,7 +3,9 @@ FROM ubuntu:20.04
 ENV DEBIAN_FRONTEND=noninteractive
 
 # -------- Install basic dependencies --------
-RUN apt-get update && \
+
+RUN sed -i -E 's|([a-z]{2}\.)?archive\.ubuntu\.com|archive.ubuntu.com|g; s|security\.ubuntu\.com|security.ubuntu.com|g' /etc/apt/sources.list && \
+    apt-get update && \
     apt-get install -y \
         xz-utils \
         clang \
@@ -64,9 +66,8 @@ RUN apt-get update && \
         libboost-program-options1.67.0 \
         libpcre2-16-0 \
         libdouble-conversion3 \
-        libglib2.0-0 libgthread-2.0-0 \
         libx11-6 libxext6 libxcursor1 \
-        libstdc++6 libgcc1 libz1 libdl2 \
+        libstdc++6 libgcc1 libz1 \
         python3 python3-pip \
         locales && \
         locale-gen en_US.UTF-8 && \

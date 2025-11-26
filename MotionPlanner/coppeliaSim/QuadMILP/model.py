@@ -6,6 +6,8 @@ from collections import defaultdict
 from itertools import combinations
 import logging
 import re
+import json
+
 logging.basicConfig(level=logging.ERROR)
 
 setParam('OutputFlag', 0)
@@ -33,13 +35,15 @@ class State(object):
 class ProblemDefinition(State):
     def __init__(self, T_MAX, N, V_MIN, V_MAX, F_MIN, F_MAX, dt ):
         super().__init__(V_MIN, V_MAX, F_MIN, F_MAX, T_MAX, N)
+        self.dt = dt
+        self.V_MIN, self.V_MAX, self.F_MIN, self.F_MAX, self.T_MAX, self.N = V_MIN, V_MAX, F_MIN, F_MAX, T_MAX, N
         epsilon = 0.01
         partA = quicksum(self.b_i_t[i, t] * self.T_t[t] for t in range(T_MAX) for i in range(N))
         partB = quicksum(self.Abs_Fx_i_t[i, t] + self.Abs_Fy_i_t[i, t] for t in range(T_MAX) for i in range(N))
+        print()
+        # Objective = time + small_weight * effort + kinectic_energy
         self.model.modelSense = GRB.MINIMIZE
         self.model.setObjective(partA + epsilon * partB)
-        self.dt = dt
-        self.V_MIN, self.V_MAX, self.F_MIN, self.F_MAX, self.T_MAX, self.N = V_MIN, V_MAX, F_MIN, F_MAX, T_MAX, N
 
     def add_force_constraints(self):
         M = 10
@@ -50,6 +54,7 @@ class ProblemDefinition(State):
                         self.Fx_i_t[i, t] * sin(2 * pi * m / M) + self.Fy_i_t[i, t] * cos(2 * pi * m / M) <= self.F_MAX)
                     self.model.addConstr(
                         self.Vx_i_t[i, t] * sin(2 * pi * m / M) + self.Vy_i_t[i, t] * cos(2 * pi * m / M) <= self.V_MAX)
+
 
     def intialization(self, robots):
 
@@ -80,11 +85,13 @@ class ProblemDefinition(State):
 
 
 class Solver(ProblemDefinition):
-    def __init__(self, robots):
+    def __init__(self, robots, sim_time=None):
         self.robots = robots
+        self.sim_time = sim_time # CoppeliaSim simulation time in seconds.
         N = len(robots)
         super().__init__(robots[0].T_MAX, N, robots[0].V_MIN, robots[0].V_MAX, robots[0].F_MIN, robots[0].F_MAX, robots[0].dt)
-
+        # Make mass and dt available for energy calculations
+        self.m = robots[0].m        # 1.8 kg from RobotModel / TrajManager
 
     def add_minimum_time_trajctory(self, goal):
         R = 1000000
@@ -99,19 +106,6 @@ class Solver(ProblemDefinition):
                 self.model.addConstr(self.x_i_t[i, t] - goal[i][0] >= -xi - R * (1 - self.b_i_t[i, t]))
                 self.model.addConstr(self.y_i_t[i, t] - goal[i][1] <=  xi + R * (1 - self.b_i_t[i, t]))
                 self.model.addConstr(self.y_i_t[i, t] - goal[i][1] >= -xi - R * (1 - self.b_i_t[i, t]))
-
-
-    # def add_collision_avoidance(self):
-    #     d = self.robots[0].radius
-    #     R = 1000000
-    #     q = [(t, i) for i in range(4) for t in range(self.T_MAX)]
-    #     q_t_k = self.model.addVars(q, vtype=GRB.BINARY)
-    #     for t in range(0, self.T_MAX):
-    #         self.model.addConstr(self.x_i_t[0, t] - self.x_i_t[1, t] >= d - R * q_t_k[t, 0])
-    #         self.model.addConstr(self.x_i_t[1, t] - self.x_i_t[0, t] >= d - R * q_t_k[t, 1])
-    #         self.model.addConstr(self.y_i_t[0, t] - self.y_i_t[1, t] >= d - R * q_t_k[t, 2])
-    #         self.model.addConstr(self.y_i_t[1, t] - self.y_i_t[0, t] >= d - R * q_t_k[t, 3])
-    #         self.model.addConstr(quicksum(q_t_k[t, i] for i in range(4)) <= 3)
 
     def add_collision_avoidance(self):
         d = self.robots[0].radius
@@ -130,6 +124,7 @@ class Solver(ProblemDefinition):
                 self.model.addConstr(self.y_i_t[ii, t] - self.y_i_t[jj, t] >= d - R * q_t_k[t, 2])
                 self.model.addConstr(self.y_i_t[jj, t] - self.y_i_t[ii, t] >= d - R * q_t_k[t, 3])
                 self.model.addConstr(quicksum(q_t_k[t, i] for i in range(4)) <= 3)
+
 
     def evaluate(self):
         ''':parameter read gurobi model and update robot parameter '''
