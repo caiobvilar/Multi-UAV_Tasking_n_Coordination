@@ -6,7 +6,6 @@ from collections import defaultdict
 from itertools import combinations
 import logging
 import re
-import json
 
 logging.basicConfig(level=logging.ERROR)
 
