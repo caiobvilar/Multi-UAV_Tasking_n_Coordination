@@ -40,7 +40,7 @@ class ProblemDefinition(State):
         partA = quicksum(self.b_i_t[i, t] * self.T_t[t] for t in range(T_MAX) for i in range(N))
         partB = quicksum(self.Abs_Fx_i_t[i, t] + self.Abs_Fy_i_t[i, t] for t in range(T_MAX) for i in range(N))
         print()
-        # Objective = time + small_weight * effort + kinectic_energy
+        # Objective = time + small_weight * effort
         self.model.modelSense = GRB.MINIMIZE
         self.model.setObjective(partA + epsilon * partB)
 

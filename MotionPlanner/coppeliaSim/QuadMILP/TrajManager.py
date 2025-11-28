@@ -71,11 +71,14 @@ class TrajManager:
         
         while self.isRunning(robots):
             try:
-                sim_time = self.sim.getSimulationTime() if hasattr(self, "sim") and self.sim is not None else None
+                sim_time = self.sim.getSimulationTime()
                 solver = Solver(robots, sim_time=sim_time)
-                if solver.solve():
+                ok = solver.solve()
+                print("solver.solve() ->", ok, " sim_time =", sim_time)
+                if ok:
                     for count, r in enumerate(robots):
                         traj = self.gen_traj_msg(r, count)
+                        print("yielding traj for robot", count, "len", len(traj))
                         yield traj
                 sleep(delay)
             except KeyboardInterrupt:

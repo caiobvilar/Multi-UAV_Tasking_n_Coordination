@@ -10,24 +10,12 @@ function sysCall_init()
 	particleLifeTime = 0.5
 	maxParticleCount = 50
 
-	local selfHandle = sim.getObject(".")
-	local name = sim.getObjectName(selfHandle)
-	local i = tonumber(string.match(name, "%[(%d+)%]"))
-	if i == nil then
-		i = 0
-	end
-	targetObj = sim.getObject("/target[" .. i .. "]")
-	if targetObj == -1 then
-		print("Could not find /target[" .. i .. "]")
-	end
-	d = selfHandle
-	if d == -1 then
-		print("Could not find self object")
-	end
-
+	-- Detatch the manipulation sphere:
+	targetObj = sim.getObject("./target")
 	sim.setObjectParent(targetObj, -1, true)
 
 	-- This control algo was quickly written and is dirty and not optimal. It just serves as a SIMPLE example
+	d = sim.getObject("./base")
 
 	propellerHandles = {}
 	jointHandles = {}
@@ -87,8 +75,9 @@ function sysCall_init()
 end
 
 function sysCall_cleanup()
-	if shadowCont ~= nil then
-		sim.removeDrawingObject(shadowCont)
+	sim.removeDrawingObject(shadowCont)
+	for i = 1, #particleObjects, 1 do
+		sim.removeParticleObject(particleObjects[i])
 	end
 end
 
@@ -100,19 +89,7 @@ function sysCall_actuation()
 	end
 
 	-- Vertical control:
-	if targetObj ~= nil and targetObj ~= -1 then
-		targetPos = sim.getObjectPosition(targetObj, -1)
-	else
-		print("Invalid targetObj handle")
-		targetPos = { 0, 0, 0 } -- or some safe fallback
-	end
-
-	if d ~= nil and d ~= -1 then
-		pos = sim.getObjectPosition(d, -1)
-	else
-		print("Invalid d handle")
-		pos = { 0, 0, 0 } -- fallback
-	end
+	targetPos = sim.getObjectPosition(targetObj, -1)
 	pos = sim.getObjectPosition(d, -1)
 	l = sim.getVelocity(heli)
 	e = (targetPos[3] - pos[3])

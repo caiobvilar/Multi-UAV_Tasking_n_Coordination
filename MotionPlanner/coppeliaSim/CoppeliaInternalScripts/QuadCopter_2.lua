@@ -11,20 +11,8 @@ function sysCall_init()
 	maxParticleCount = 50
 
 	-- Detatch the manipulation sphere:
-	local selfHandle = sim.getObject(".")
-	local name = sim.getObjectAlias(selfHandle)
-	local i = tonumber(string.match(name, "%[(%d+)%]"))
-	if i == nil then
-		i = 0
-	end
-	targetObj = sim.getObject("/target[" .. i .. "]")
-	if targetObj == -1 then
-		print("Could not find /target[" .. i .. "]")
-	end
-	d = selfHandle
-	if d == -1 then
-		print("Could not find self object")
-	end
+	targetObj = sim.getObject("./target")
+	sim.setObjectParent(targetObj, -1, true)
 
 	-- This control algo was quickly written and is dirty and not optimal. It just serves as a SIMPLE example
 	d = sim.getObject("./base")
